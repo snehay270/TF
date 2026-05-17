@@ -1,0 +1,1811 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps with Python — Hands-On Master Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Manrope:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --card: #1a2235;
+    --border: #243044;
+    --accent: #f7c948;
+    --accent2: #3b82f6;
+    --accent3: #22c55e;
+    --red: #f43f5e;
+    --text: #d1dce8;
+    --muted: #5e7190;
+    --py-blue: #3b82f6;
+    --py-yellow: #f7c948;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 14.5px;
+    line-height: 1.75;
+  }
+
+  /* ── HERO ─────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(160deg, #0f1117 0%, #131a2b 60%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 56px 44px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -60px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #3b82f61a 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 15%;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, #f7c9481a 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .python-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #1a2235;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 6px 18px 6px 10px;
+    margin-bottom: 22px;
+  }
+  .python-logo svg { width: 24px; height: 24px; }
+  .python-logo span {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--py-blue), var(--py-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.08;
+    color: #fff;
+    margin-bottom: 18px;
+  }
+  .hero h1 .hl { color: var(--accent); }
+  .hero h1 .hl2 { color: var(--py-blue); }
+  .hero-desc {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 580px;
+    margin-bottom: 28px;
+    line-height: 1.7;
+  }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill {
+    background: #1a2235;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+  .pill strong { color: var(--accent); }
+
+  /* ── LAYOUT ───────────────────────────────────── */
+  .layout { display: flex; max-width: 1300px; margin: 0 auto; }
+  .sidebar {
+    width: 258px;
+    min-width: 258px;
+    padding: 28px 0;
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface);
+  }
+  .sidebar-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 22px 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+  }
+  .nav-group {
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #3b5178;
+    padding: 12px 22px 4px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 22px;
+    color: var(--muted);
+    font-size: 13px;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+    transition: all 0.18s;
+    cursor: pointer;
+  }
+  .nav-item:hover, .nav-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: #f7c9480a;
+  }
+  .nav-em { font-size: 14px; }
+
+  /* ── MAIN ─────────────────────────────────────── */
+  .main {
+    flex: 1;
+    padding: 44px 52px;
+    max-width: calc(100% - 258px);
+    overflow-x: hidden;
+  }
+
+  /* ── CHAPTER ──────────────────────────────────── */
+  .chapter { margin-bottom: 72px; scroll-margin-top: 28px; }
+  .chapter-hd {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    margin-bottom: 32px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ch-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .ch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .ch-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 7px;
+  }
+
+  /* ── LABEL ────────────────────────────────────── */
+  .lbl {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin: 28px 0 12px;
+  }
+
+  /* ── CODE BLOCK ───────────────────────────────── */
+  .code-block {
+    background: #0a0d13;
+    border: 1px solid #1d2d45;
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin: 14px 0;
+    overflow-x: auto;
+    position: relative;
+  }
+  .code-block pre {
+    font-family: 'Space Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #c9d8ee;
+  }
+  .file-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--py-yellow);
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+  /* syntax colours */
+  .kw  { color: #c678dd; }   /* keyword */
+  .fn  { color: #61afef; }   /* function/class */
+  .st  { color: #98c379; }   /* string */
+  .cm  { color: #5e7190; }   /* comment */
+  .nm  { color: #d19a66; }   /* number / const */
+  .op  { color: #56b6c2; }   /* operator / flag */
+  .py  { color: #f7c948; }   /* python highlight */
+
+  /* ── INLINE CODE ──────────────────────────────── */
+  code {
+    background: #1d2d45;
+    color: #61afef;
+    font-family: 'Space Mono', monospace;
+    font-size: 11.5px;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  /* ── CALLOUT ──────────────────────────────────── */
+  .callout {
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin: 16px 0;
+    display: flex;
+    gap: 14px;
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  .callout .ci { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout p { margin: 0; }
+  .callout.info  { background: #3b82f610; border: 1px solid #3b82f626; color: #93c5fd; }
+  .callout.warn  { background: #f7c94810; border: 1px solid #f7c94826; color: #fde68a; }
+  .callout.ok    { background: #22c55e10; border: 1px solid #22c55e26; color: #86efac; }
+  .callout.red   { background: #f43f5e10; border: 1px solid #f43f5e26; color: #fda4af; }
+
+  /* ── CARD ─────────────────────────────────────── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, var(--py-blue), var(--py-yellow));
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card p, .card li { color: var(--muted); font-size: 13.5px; }
+  .card ul { padding-left: 18px; }
+  .card li { margin-bottom: 4px; }
+
+  /* ── STEPS ────────────────────────────────────── */
+  .steps { list-style: none; }
+  .step { display: flex; gap: 18px; margin-bottom: 26px; align-items: flex-start; }
+  .step-n {
+    min-width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--py-blue), var(--py-yellow));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: #0f1117;
+    flex-shrink: 0; margin-top: 3px;
+  }
+  .step-b h4 { font-weight: 700; color: #fff; margin-bottom: 6px; font-size: 14px; }
+  .step-b p, .step-b li { color: var(--muted); font-size: 13.5px; }
+
+  /* ── COMPARISON TABLE ─────────────────────────── */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .compare th {
+    background: var(--card);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+  .compare td {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: top;
+  }
+  .compare tr:nth-child(even) td { background: #131929; }
+  .compare td strong { color: var(--text); }
+  .compare td code { font-size: 11px; }
+
+  /* ── TOOL GRID ────────────────────────────────── */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .tool-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .tool-chip .ic { font-size: 20px; }
+  .tool-chip .nm2 { font-weight: 700; font-size: 12.5px; color: #fff; }
+  .tool-chip .ds { font-size: 10.5px; color: var(--muted); }
+
+  /* ── PIPELINE ─────────────────────────────────── */
+  .pipeline {
+    display: flex; align-items: center; gap: 0;
+    margin: 22px 0; overflow-x: auto; padding: 4px 0;
+  }
+  .ps {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 13px 16px;
+    min-width: 110px; text-align: center; flex-shrink: 0;
+  }
+  .ps .pi { font-size: 22px; margin-bottom: 5px; }
+  .ps .pn { font-size: 11px; font-weight: 700; color: #fff; font-family: 'Manrope', sans-serif; }
+  .ps .pt { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .pa { color: var(--accent); font-size: 18px; padding: 0 6px; flex-shrink: 0; }
+
+  /* ── FILE TREE ────────────────────────────────── */
+  .filetree {
+    background: #0a0d13;
+    border: 1px solid #1d2d45;
+    border-radius: 10px;
+    padding: 18px 22px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    margin: 14px 0;
+    color: #c9d8ee;
+  }
+  .filetree .dir { color: var(--py-blue); }
+  .filetree .file { color: #c9d8ee; }
+  .filetree .py-file { color: var(--py-yellow); }
+  .filetree .cfg { color: var(--accent3); }
+
+  /* ── SCROLLBAR ─────────────────────────────────── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── RESPONSIVE ───────────────────────────────── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { padding: 24px 18px; max-width: 100%; }
+    .hero { padding: 36px 18px 32px; }
+    .pipeline { flex-wrap: wrap; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="hero">
+  <div class="python-logo">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 2C9.2 2 7 3.2 7 4.8V7h5v1H5.5C3.6 8 2 9.8 2 12s1.6 4 3.5 4H5v2.2C5 19.8 7.2 21 10 21h4c2.8 0 5-1.2 5-2.8V16H14v-1h6.5c1.9 0 3.5-1.8 3.5-4s-1.6-4-3.5-4H19V4.8C19 3.2 16.8 2 14 2h-2z" fill="#3b82f6"/>
+      <circle cx="10" cy="5.5" r="1" fill="white"/>
+      <circle cx="14" cy="18.5" r="1" fill="white"/>
+    </svg>
+    <span>Python DevOps Bootcamp</span>
+  </div>
+  <h1>DevOps Mastery<br>with <span class="hl2">Python</span> &amp; <span class="hl">Open Source</span></h1>
+  <p class="hero-desc">Every concept from the DevOps Bootcamp book — rebuilt with Python tooling. Same pipeline, same stages, Python-native implementation you can run today.</p>
+  <div class="pill-row">
+    <div class="pill"><strong>Flask</strong> sample app</div>
+    <div class="pill"><strong>pytest</strong> + unittest</div>
+    <div class="pill"><strong>Ansible</strong> config mgmt</div>
+    <div class="pill"><strong>boto3</strong> AWS automation</div>
+    <div class="pill"><strong>Selenium</strong> + <strong>Locust</strong> testing</div>
+    <div class="pill"><strong>Docker</strong> + <strong>Jenkins</strong> CI</div>
+    <div class="pill"><strong>GitHub Actions</strong></div>
+  </div>
+</div>
+
+<!-- ═══════════ LAYOUT ═══════════ -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-label">📋 Contents</div>
+    <div class="nav-group">Foundations</div>
+    <a class="nav-item" href="#overview"><span class="nav-em">🗺️</span> Python DevOps Map</a>
+    <a class="nav-item" href="#setup"><span class="nav-em">⚙️</span> Environment Setup</a>
+    <div class="nav-group">CI Pipeline</div>
+    <a class="nav-item" href="#flask-app"><span class="nav-em">🐍</span> Sample Flask App</a>
+    <a class="nav-item" href="#ci-jenkins"><span class="nav-em">🔧</span> Jenkins CI</a>
+    <a class="nav-item" href="#ci-gh-actions"><span class="nav-em">⚡</span> GitHub Actions CI</a>
+    <div class="nav-group">Containers</div>
+    <a class="nav-item" href="#docker"><span class="nav-em">🐳</span> Docker for Python</a>
+    <div class="nav-group">Config &amp; Cloud</div>
+    <a class="nav-item" href="#ansible"><span class="nav-em">📦</span> Ansible</a>
+    <a class="nav-item" href="#boto3"><span class="nav-em">☁️</span> boto3 AWS</a>
+    <div class="nav-group">Testing</div>
+    <a class="nav-item" href="#testing"><span class="nav-em">🧪</span> pytest &amp; Selenium</a>
+    <a class="nav-item" href="#load"><span class="nav-em">📈</span> Locust Load Testing</a>
+    <div class="nav-group">Advanced</div>
+    <a class="nav-item" href="#pipeline"><span class="nav-em">🎼</span> Full Pipeline</a>
+    <a class="nav-item" href="#monitoring"><span class="nav-em">📊</span> Monitoring</a>
+    <a class="nav-item" href="#security"><span class="nav-em">🔒</span> Security</a>
+    <a class="nav-item" href="#cheatsheet"><span class="nav-em">⚡</span> Cheatsheet</a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══ OVERVIEW ══ -->
+    <section class="chapter" id="overview">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">OVERVIEW</div>
+          <div class="ch-title">Python DevOps Tool Map</div>
+          <div class="ch-sub">// java/maven → python/pip equivalents for every stage</div>
+        </div>
+      </div>
+
+      <p style="color:var(--muted);margin-bottom:20px;">The book uses a Java/Maven app. In this guide we swap every tool for its Python-native equivalent while keeping the <strong style="color:#fff">exact same DevOps stages</strong>. Same pipeline — Python inside.</p>
+
+      <div class="pipeline">
+        <div class="ps"><div class="pi">✍️</div><div class="pn">Code</div><div class="pt">Flask/FastAPI</div></div>
+        <div class="pa">→</div>
+        <div class="ps"><div class="pi">🔨</div><div class="pn">Build</div><div class="pt">pip + setuptools</div></div>
+        <div class="pa">→</div>
+        <div class="ps"><div class="pi">🔍</div><div class="pn">Lint</div><div class="pt">flake8 / pylint</div></div>
+        <div class="pa">→</div>
+        <div class="ps"><div class="pi">🧪</div><div class="pn">Test</div><div class="pt">pytest</div></div>
+        <div class="pa">→</div>
+        <div class="ps"><div class="pi">🐳</div><div class="pn">Package</div><div class="pt">Docker</div></div>
+        <div class="pa">→</div>
+        <div class="ps"><div class="pi">📦</div><div class="pn">Provision</div><div class="pt">Ansible</div></div>
+        <div class="pa">→</div>
+        <div class="ps"><div class="pi">🚀</div><div class="pn">Deploy</div><div class="pt">boto3 / SSH</div></div>
+        <div class="pa">→</div>
+        <div class="ps"><div class="pi">📊</div><div class="pn">Monitor</div><div class="pt">Prometheus</div></div>
+      </div>
+
+      <span class="lbl">Java → Python Tool Mapping</span>
+      <table class="compare">
+        <tr><th>Stage</th><th>Book (Java)</th><th>This Guide (Python)</th></tr>
+        <tr><td><strong>App Framework</strong></td><td>Spring PetClinic</td><td><code>Flask</code> / FastAPI app</td></tr>
+        <tr><td><strong>Build Tool</strong></td><td>Apache Maven</td><td><code>pip</code> + <code>setuptools</code> / <code>pyproject.toml</code></td></tr>
+        <tr><td><strong>Unit Tests</strong></td><td>JUnit</td><td><code>pytest</code> + <code>unittest</code></td></tr>
+        <tr><td><strong>Code Analysis</strong></td><td>SonarQube</td><td><code>flake8</code>, <code>pylint</code>, <code>bandit</code>, <code>SonarQube</code></td></tr>
+        <tr><td><strong>Config Management</strong></td><td>Chef</td><td><code>Ansible</code> (YAML playbooks)</td></tr>
+        <tr><td><strong>Cloud Provision</strong></td><td>knife-ec2</td><td><code>boto3</code> (AWS Python SDK)</td></tr>
+        <tr><td><strong>CI Server</strong></td><td>Jenkins</td><td>Jenkins <em>or</em> GitHub Actions</td></tr>
+        <tr><td><strong>Functional Tests</strong></td><td>Selenium + TestNG</td><td><code>Selenium</code> + <code>pytest</code></td></tr>
+        <tr><td><strong>Load Tests</strong></td><td>Apache JMeter</td><td><code>Locust</code> (pure Python)</td></tr>
+        <tr><td><strong>Container</strong></td><td>Docker + Tomcat image</td><td>Docker + <code>gunicorn</code> + Python image</td></tr>
+        <tr><td><strong>Artifact Registry</strong></td><td>Nexus / Artifactory</td><td>PyPI / Docker Hub / S3</td></tr>
+        <tr><td><strong>Monitoring</strong></td><td>Nagios / ELK</td><td>Prometheus + Grafana + ELK</td></tr>
+      </table>
+    </section>
+
+    <!-- ══ SETUP ══ -->
+    <section class="chapter" id="setup">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">PRE-REQUISITES</div>
+          <div class="ch-title">Environment Setup</div>
+          <div class="ch-sub">// install everything you need before starting</div>
+        </div>
+      </div>
+
+      <span class="lbl">Step 1 — Install Python 3.10+</span>
+      <div class="code-block">
+        <span class="file-tag">BASH — Ubuntu / Debian</span>
+        <pre><span class="cm"># Ubuntu</span>
+<span class="fn">sudo apt update</span> && <span class="fn">sudo apt install</span> <span class="nm">python3.10 python3-pip python3-venv</span> -y
+<span class="fn">python3</span> --version   <span class="cm"># Python 3.10.x</span></pre>
+      </div>
+      <div class="code-block">
+        <span class="file-tag">BASH — Windows (PowerShell)</span>
+        <pre><span class="cm"># Download installer from python.org OR use winget:</span>
+<span class="fn">winget install</span> <span class="nm">Python.Python.3.10</span>
+<span class="fn">python</span> --version</pre>
+      </div>
+
+      <span class="lbl">Step 2 — Create a Virtual Environment (Always Do This!)</span>
+      <div class="code-block">
+        <pre><span class="cm"># Create venv in your project folder</span>
+<span class="fn">python3</span> -m venv venv
+
+<span class="cm"># Activate it</span>
+<span class="fn">source</span> venv/bin/activate          <span class="cm"># Linux/Mac</span>
+<span class="fn">venv\Scripts\activate</span>             <span class="cm"># Windows</span>
+
+<span class="cm"># Your prompt should show (venv)</span>
+<span class="cm"># Install dependencies</span>
+<span class="fn">pip install</span> flask pytest flake8 bandit selenium locust ansible boto3</pre>
+      </div>
+
+      <span class="lbl">Step 3 — Install All DevOps Tools</span>
+      <div class="tool-grid">
+        <div class="tool-chip"><div class="ic">🐍</div><div><div class="nm2">Python 3.10+</div><div class="ds">Runtime</div></div></div>
+        <div class="tool-chip"><div class="ic">🌐</div><div><div class="nm2">Flask / FastAPI</div><div class="ds">Web Framework</div></div></div>
+        <div class="tool-chip"><div class="ic">✅</div><div><div class="nm2">pytest</div><div class="ds">Unit Testing</div></div></div>
+        <div class="tool-chip"><div class="ic">🔍</div><div><div class="nm2">flake8 + pylint</div><div class="ds">Linting</div></div></div>
+        <div class="tool-chip"><div class="ic">🔒</div><div><div class="nm2">bandit</div><div class="ds">Security scan</div></div></div>
+        <div class="tool-chip"><div class="ic">🐳</div><div><div class="nm2">Docker</div><div class="ds">Containerize</div></div></div>
+        <div class="tool-chip"><div class="ic">📦</div><div><div class="nm2">Ansible</div><div class="ds">Config Mgmt</div></div></div>
+        <div class="tool-chip"><div class="ic">☁️</div><div><div class="nm2">boto3</div><div class="ds">AWS SDK</div></div></div>
+        <div class="tool-chip"><div class="ic">🌏</div><div><div class="nm2">Selenium</div><div class="ds">Browser tests</div></div></div>
+        <div class="tool-chip"><div class="ic">📈</div><div><div class="nm2">Locust</div><div class="ds">Load testing</div></div></div>
+        <div class="tool-chip"><div class="ic">⚙️</div><div><div class="nm2">Jenkins</div><div class="ds">CI Server</div></div></div>
+        <div class="tool-chip"><div class="ic">📊</div><div><div class="nm2">Prometheus</div><div class="ds">Monitoring</div></div></div>
+      </div>
+    </section>
+
+    <!-- ══ FLASK APP ══ -->
+    <section class="chapter" id="flask-app">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 01 — APP</div>
+          <div class="ch-title">Build a Sample Flask App</div>
+          <div class="ch-sub">// equivalent of Spring PetClinic — our app for the whole pipeline</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🗂️ Project Structure</h3>
+        <p>We'll build a simple Flask app called <strong style="color:#fff">PyClinic</strong> — a Python equivalent of PetClinic that we'll build, test, containerize, and deploy throughout this guide.</p>
+      </div>
+
+      <div class="filetree">
+<span class="dir">pyclinic/</span>
+├── <span class="py-file">app.py</span>               <span class="cm"># Flask app</span>
+├── <span class="py-file">models.py</span>            <span class="cm"># Data models</span>
+├── <span class="cfg">requirements.txt</span>     <span class="cm"># Dependencies (like pom.xml)</span>
+├── <span class="cfg">setup.py</span>             <span class="cm"># Package definition</span>
+├── <span class="cfg">Dockerfile</span>           <span class="cm"># Container recipe</span>
+├── <span class="cfg">Jenkinsfile</span>          <span class="cm"># Pipeline definition</span>
+├── <span class="dir">tests/</span>
+│   ├── <span class="py-file">test_app.py</span>      <span class="cm"># pytest unit tests</span>
+│   └── <span class="py-file">test_selenium.py</span> <span class="cm"># functional tests</span>
+├── <span class="dir">templates/</span>
+│   └── <span class="file">index.html</span>
+└── <span class="dir">ansible/</span>
+    ├── <span class="cfg">playbook.yml</span>     <span class="cm"># Config management</span>
+    └── <span class="cfg">inventory.ini</span>    <span class="cm"># Hosts list</span>
+      </div>
+
+      <span class="lbl">app.py — The Flask Application</span>
+      <div class="code-block">
+        <span class="file-tag">PYTHON — app.py</span>
+        <pre><span class="kw">from</span> <span class="fn">flask</span> <span class="kw">import</span> Flask, jsonify, request, render_template
+<span class="kw">from</span> <span class="fn">prometheus_flask_exporter</span> <span class="kw">import</span> PrometheusMetrics  <span class="cm"># monitoring</span>
+
+app = Flask(__name__)
+metrics = PrometheusMetrics(app)  <span class="cm"># auto-expose /metrics endpoint</span>
+
+pets = []  <span class="cm"># in-memory store (swap for DB later)</span>
+
+@app.route(<span class="st">'/'</span>)
+<span class="kw">def</span> <span class="fn">home</span>():
+    <span class="kw">return</span> render_template(<span class="st">'index.html'</span>, pets=pets)
+
+@app.route(<span class="st">'/api/pets'</span>, methods=[<span class="st">'GET'</span>])
+<span class="kw">def</span> <span class="fn">get_pets</span>():
+    <span class="kw">return</span> jsonify(pets)
+
+@app.route(<span class="st">'/api/pets'</span>, methods=[<span class="st">'POST'</span>])
+<span class="kw">def</span> <span class="fn">add_pet</span>():
+    data = request.get_json()
+    pets.append(data)
+    <span class="kw">return</span> jsonify(data), <span class="nm">201</span>
+
+@app.route(<span class="st">'/health'</span>)
+<span class="kw">def</span> <span class="fn">health</span>():
+    <span class="kw">return</span> jsonify({<span class="st">'status'</span>: <span class="st">'healthy'</span>}), <span class="nm">200</span>
+
+<span class="kw">if</span> __name__ == <span class="st">'__main__'</span>:
+    app.run(host=<span class="st">'0.0.0.0'</span>, port=<span class="nm">5000</span>, debug=<span class="kw">True</span>)</pre>
+      </div>
+
+      <span class="lbl">requirements.txt — Dependencies (like pom.xml)</span>
+      <div class="code-block">
+        <span class="file-tag">TEXT — requirements.txt</span>
+        <pre>flask==3.0.3
+gunicorn==21.2.0
+pytest==8.2.0
+pytest-cov==5.0.0
+flake8==7.0.0
+bandit==1.7.8
+selenium==4.21.0
+locust==2.28.0
+boto3==1.34.0
+ansible==9.5.1
+prometheus-flask-exporter==0.23.0</pre>
+      </div>
+
+      <span class="lbl">Run the App Locally</span>
+      <div class="code-block">
+        <pre><span class="fn">pip install</span> -r requirements.txt
+<span class="fn">python</span> app.py
+<span class="cm"># Visit: http://localhost:5000</span>
+<span class="cm"># Health check: http://localhost:5000/health</span></pre>
+      </div>
+    </section>
+
+    <!-- ══ CI JENKINS ══ -->
+    <section class="chapter" id="ci-jenkins">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 02 — CI</div>
+          <div class="ch-title">Jenkins CI for Python</div>
+          <div class="ch-sub">// install jenkins → create pipeline → build → lint → test</div>
+        </div>
+      </div>
+
+      <span class="lbl">Step 1 — Install Jenkins</span>
+      <div class="code-block">
+        <span class="file-tag">BASH — Ubuntu</span>
+        <pre><span class="cm"># Install Java (Jenkins runs on JVM)</span>
+<span class="fn">sudo apt install</span> openjdk-17-jdk -y
+
+<span class="cm"># Add Jenkins repo and install</span>
+<span class="fn">curl</span> -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key \
+  | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+<span class="fn">echo</span> <span class="st">"deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/"</span> \
+  | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+<span class="fn">sudo apt update</span> && <span class="fn">sudo apt install</span> jenkins -y
+<span class="fn">sudo systemctl start</span> jenkins
+<span class="fn">sudo systemctl enable</span> jenkins
+
+<span class="cm"># Get initial admin password</span>
+<span class="fn">sudo cat</span> /var/lib/jenkins/secrets/initialAdminPassword
+<span class="cm"># Visit: http://localhost:8080</span></pre>
+      </div>
+
+      <span class="lbl">Step 2 — Install Python on Jenkins Agent</span>
+      <div class="code-block">
+        <pre><span class="cm"># On the Jenkins server / agent machine:</span>
+<span class="fn">sudo apt install</span> python3 python3-pip python3-venv -y
+
+<span class="cm"># Verify Jenkins can find Python</span>
+<span class="fn">python3</span> --version && <span class="fn">pip3</span> --version</pre>
+      </div>
+
+      <span class="lbl">Step 3 — Jenkinsfile (Pipeline as Code)</span>
+      <div class="callout info">
+        <div class="ci">💡</div>
+        <p>Place this <code>Jenkinsfile</code> in the <strong>root of your repo</strong>. Jenkins reads it automatically when you create a Pipeline job pointing at your Git repo.</p>
+      </div>
+      <div class="code-block">
+        <span class="file-tag">GROOVY — Jenkinsfile (Python CI Pipeline)</span>
+        <pre><span class="kw">pipeline</span> {
+  <span class="kw">agent</span> any
+
+  <span class="kw">environment</span> {
+    <span class="nm">VENV</span> = <span class="st">"venv"</span>
+    <span class="nm">APP_PORT</span> = <span class="st">"5000"</span>
+  }
+
+  <span class="kw">stages</span> {
+
+    <span class="kw">stage</span>(<span class="st">'📥 Checkout'</span>) {
+      <span class="kw">steps</span> { checkout scm }
+    }
+
+    <span class="kw">stage</span>(<span class="st">'🐍 Setup Python Env'</span>) {
+      <span class="kw">steps</span> {
+        <span class="fn">sh</span> <span class="st">'''
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install -r requirements.txt
+        '''</span>
+      }
+    }
+
+    <span class="kw">stage</span>(<span class="st">'🔍 Lint (flake8)'</span>) {
+      <span class="kw">steps</span> {
+        <span class="fn">sh</span> <span class="st">'''
+          . venv/bin/activate
+          flake8 app.py models.py --max-line-length=100 \
+            --format=pylint > flake8_report.txt || true
+        '''</span>
+      }
+      <span class="kw">post</span> {
+        <span class="kw">always</span> {
+          <span class="cm">// Archive linting report</span>
+          archiveArtifacts <span class="nm">artifacts</span>: <span class="st">'flake8_report.txt'</span>, allowEmptyArchive: <span class="kw">true</span>
+        }
+      }
+    }
+
+    <span class="kw">stage</span>(<span class="st">'🔒 Security Scan (bandit)'</span>) {
+      <span class="kw">steps</span> {
+        <span class="fn">sh</span> <span class="st">'''
+          . venv/bin/activate
+          bandit -r app.py models.py -f json -o bandit_report.json || true
+        '''</span>
+      }
+      <span class="kw">post</span> {
+        <span class="kw">always</span> { archiveArtifacts <span class="nm">artifacts</span>: <span class="st">'bandit_report.json'</span>, allowEmptyArchive: <span class="kw">true</span> }
+      }
+    }
+
+    <span class="kw">stage</span>(<span class="st">'🧪 Unit Tests (pytest)'</span>) {
+      <span class="kw">steps</span> {
+        <span class="fn">sh</span> <span class="st">'''
+          . venv/bin/activate
+          pytest tests/test_app.py \
+            --junitxml=test-results.xml \
+            --cov=app \
+            --cov-report=xml:coverage.xml \
+            -v
+        '''</span>
+      }
+      <span class="kw">post</span> {
+        <span class="kw">always</span> {
+          junit <span class="st">'test-results.xml'</span>
+          <span class="cm">// Publish coverage with Coverage plugin</span>
+        }
+      }
+    }
+
+    <span class="kw">stage</span>(<span class="st">'🐳 Docker Build'</span>) {
+      <span class="kw">steps</span> {
+        <span class="fn">sh</span> <span class="st">'docker build -t pyclinic:${BUILD_NUMBER} .'</span>
+        <span class="fn">sh</span> <span class="st">'docker tag pyclinic:${BUILD_NUMBER} pyclinic:latest'</span>
+      }
+    }
+
+    <span class="kw">stage</span>(<span class="st">'🚀 Deploy (Docker)'</span>) {
+      <span class="kw">steps</span> {
+        <span class="fn">sh</span> <span class="st">'''
+          docker stop pyclinic || true
+          docker rm pyclinic   || true
+          docker run -d \
+            --name pyclinic \
+            -p 5000:5000 \
+            pyclinic:latest
+        '''</span>
+      }
+    }
+  }
+
+  <span class="kw">post</span> {
+    <span class="kw">failure</span> {
+      <span class="fn">mail</span> <span class="nm">to</span>: <span class="st">'team@company.com'</span>,
+           <span class="nm">subject</span>: <span class="st">"Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}"</span>,
+           <span class="nm">body</span>: <span class="st">"Check: ${env.BUILD_URL}"</span>
+    }
+    <span class="kw">success</span> {
+      <span class="fn">echo</span> <span class="st">'✅ Build, lint, tests, and deploy — all green!'</span>
+    }
+  }
+}</pre>
+      </div>
+
+      <span class="lbl">Step 4 — Create Pipeline Job in Jenkins</span>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-n">1</div>
+          <div class="step-b">
+            <h4>New Item → Pipeline</h4>
+            <p>Jenkins Dashboard → New Item → name it <code>PyClinic-Pipeline</code> → select <strong>Pipeline</strong> → OK.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-n">2</div>
+          <div class="step-b">
+            <h4>Point at Repo</h4>
+            <p>Under "Pipeline" section → Definition: <strong>Pipeline script from SCM</strong> → SCM: Git → Repository URL: your GitHub repo → Script Path: <code>Jenkinsfile</code> → Save.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-n">3</div>
+          <div class="step-b">
+            <h4>Build Now</h4>
+            <p>Click <strong>Build Now</strong>. Watch each stage in the pipeline view. Click any stage → "Logs" to debug failures.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ══ GITHUB ACTIONS ══ -->
+    <section class="chapter" id="ci-gh-actions">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 02b — CI</div>
+          <div class="ch-title">GitHub Actions CI</div>
+          <div class="ch-sub">// zero server setup — CI runs in the cloud for free</div>
+        </div>
+      </div>
+
+      <div class="callout ok">
+        <div class="ci">✅</div>
+        <p>GitHub Actions is the easiest way to start CI with Python — no server to install. Just create this YAML file and push to GitHub.</p>
+      </div>
+
+      <div class="code-block">
+        <span class="file-tag">YAML — .github/workflows/ci.yml</span>
+        <pre><span class="kw">name</span>: <span class="st">PyClinic CI Pipeline</span>
+
+<span class="kw">on</span>:
+  <span class="nm">push</span>:
+    <span class="nm">branches</span>: [<span class="st">main</span>, <span class="st">develop</span>]
+  <span class="nm">pull_request</span>:
+    <span class="nm">branches</span>: [<span class="st">main</span>]
+
+<span class="kw">jobs</span>:
+  <span class="nm">build-test-deploy</span>:
+    <span class="nm">runs-on</span>: ubuntu-latest
+
+    <span class="nm">steps</span>:
+      <span class="cm"># 1. Checkout code</span>
+      - <span class="nm">name</span>: <span class="st">📥 Checkout Code</span>
+        <span class="nm">uses</span>: <span class="st">actions/checkout@v4</span>
+
+      <span class="cm"># 2. Set up Python</span>
+      - <span class="nm">name</span>: <span class="st">🐍 Set up Python 3.11</span>
+        <span class="nm">uses</span>: <span class="st">actions/setup-python@v5</span>
+        <span class="nm">with</span>:
+          <span class="nm">python-version</span>: <span class="st">'3.11'</span>
+          <span class="nm">cache</span>: <span class="st">'pip'</span>   <span class="cm"># cache dependencies</span>
+
+      <span class="cm"># 3. Install dependencies</span>
+      - <span class="nm">name</span>: <span class="st">📦 Install Dependencies</span>
+        <span class="nm">run</span>: |
+          <span class="fn">python</span> -m pip install --upgrade pip
+          <span class="fn">pip install</span> -r requirements.txt
+
+      <span class="cm"># 4. Lint with flake8</span>
+      - <span class="nm">name</span>: <span class="st">🔍 Lint with flake8</span>
+        <span class="nm">run</span>: |
+          <span class="fn">flake8</span> app.py models.py \
+            --max-line-length=100 \
+            --statistics
+
+      <span class="cm"># 5. Security scan</span>
+      - <span class="nm">name</span>: <span class="st">🔒 Security Scan (bandit)</span>
+        <span class="nm">run</span>: <span class="fn">bandit</span> -r app.py -ll
+
+      <span class="cm"># 6. Run pytest with coverage</span>
+      - <span class="nm">name</span>: <span class="st">🧪 Run Tests with Coverage</span>
+        <span class="nm">run</span>: |
+          <span class="fn">pytest</span> tests/ \
+            --junitxml=test-results.xml \
+            --cov=app \
+            --cov-report=xml \
+            --cov-fail-under=<span class="nm">70</span>
+
+      <span class="cm"># 7. Upload test report</span>
+      - <span class="nm">name</span>: <span class="st">📊 Upload Test Results</span>
+        <span class="nm">uses</span>: <span class="st">actions/upload-artifact@v4</span>
+        <span class="nm">if</span>: <span class="st">always()</span>
+        <span class="nm">with</span>:
+          <span class="nm">name</span>: <span class="st">test-results</span>
+          <span class="nm">path</span>: <span class="st">test-results.xml</span>
+
+      <span class="cm"># 8. Build Docker image</span>
+      - <span class="nm">name</span>: <span class="st">🐳 Build Docker Image</span>
+        <span class="nm">run</span>: <span class="fn">docker build</span> -t pyclinic:${{ github.sha }} .
+
+      <span class="cm"># 9. Push to Docker Hub (on main branch only)</span>
+      - <span class="nm">name</span>: <span class="st">🚀 Push to Docker Hub</span>
+        <span class="nm">if</span>: <span class="st">github.ref == 'refs/heads/main'</span>
+        <span class="nm">run</span>: |
+          <span class="fn">echo</span> <span class="st">"${{ secrets.DOCKER_PASSWORD }}"</span> \
+            | docker login -u <span class="st">"${{ secrets.DOCKER_USERNAME }}"</span> --password-stdin
+          <span class="fn">docker tag</span> pyclinic:${{ github.sha }} <span class="st">yourname/pyclinic:latest</span>
+          <span class="fn">docker push</span> <span class="st">yourname/pyclinic:latest</span></pre>
+      </div>
+
+      <div class="callout info">
+        <div class="ci">💡</div>
+        <p>Add <code>DOCKER_USERNAME</code> and <code>DOCKER_PASSWORD</code> in your GitHub repo → Settings → Secrets and Variables → Actions → New repository secret.</p>
+      </div>
+    </section>
+
+    <!-- ══ DOCKER ══ -->
+    <section class="chapter" id="docker">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 03 — CONTAINERS</div>
+          <div class="ch-title">Docker for Python Apps</div>
+          <div class="ch-sub">// package flask app into a portable container</div>
+        </div>
+      </div>
+
+      <span class="lbl">Step 1 — Write the Dockerfile</span>
+      <div class="code-block">
+        <span class="file-tag">DOCKERFILE — production-ready Python container</span>
+        <pre><span class="cm"># Use official slim Python image (smaller than full)</span>
+<span class="kw">FROM</span> python:3.11-slim
+
+<span class="cm"># Set working directory inside container</span>
+<span class="kw">WORKDIR</span> /app
+
+<span class="cm"># Copy requirements first (layer caching — faster rebuilds)</span>
+<span class="kw">COPY</span> requirements.txt .
+<span class="kw">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="cm"># Copy application code</span>
+<span class="kw">COPY</span> . .
+
+<span class="cm"># Expose port 5000 (Flask default)</span>
+<span class="kw">EXPOSE</span> 5000
+
+<span class="cm"># Use gunicorn for production (not Flask dev server)</span>
+<span class="cm"># gunicorn = Java's Tomcat equivalent for Python</span>
+<span class="kw">CMD</span> ["gunicorn", "--bind", "0.0.0.0:5000", \
+     "--workers", "4", \
+     "--timeout", "120", \
+     "app:app"]</pre>
+      </div>
+
+      <span class="lbl">Step 2 — Build &amp; Run</span>
+      <div class="code-block">
+        <pre><span class="cm"># Build image</span>
+<span class="fn">docker build</span> -t pyclinic:latest .
+
+<span class="cm"># Run container (host port 8080 → container port 5000)</span>
+<span class="fn">docker run</span> -d \
+  --name pyclinic \
+  -p 8080:5000 \
+  pyclinic:latest
+
+<span class="cm"># Verify running</span>
+<span class="fn">docker ps</span>
+
+<span class="cm"># Test it</span>
+<span class="fn">curl</span> http://localhost:8080/health
+<span class="cm"># Expected: {"status": "healthy"}</span>
+
+<span class="cm"># View logs</span>
+<span class="fn">docker logs</span> -f pyclinic
+
+<span class="cm"># Stop / remove</span>
+<span class="fn">docker stop</span> pyclinic && <span class="fn">docker rm</span> pyclinic</pre>
+      </div>
+
+      <span class="lbl">Step 3 — Docker Compose (Multi-Service)</span>
+      <div class="code-block">
+        <span class="file-tag">YAML — docker-compose.yml</span>
+        <pre><span class="kw">version</span>: <span class="st">'3.8'</span>
+<span class="kw">services</span>:
+  <span class="nm">app</span>:
+    <span class="nm">build</span>: .
+    <span class="nm">ports</span>: [<span class="st">"8080:5000"</span>]
+    <span class="nm">environment</span>:
+      - <span class="nm">FLASK_ENV</span>=production
+    <span class="nm">depends_on</span>: [<span class="nm">redis</span>]
+    <span class="nm">restart</span>: unless-stopped
+
+  <span class="nm">redis</span>:
+    <span class="nm">image</span>: <span class="st">redis:7-alpine</span>
+    <span class="nm">ports</span>: [<span class="st">"6379:6379"</span>]
+
+  <span class="nm">prometheus</span>:
+    <span class="nm">image</span>: <span class="st">prom/prometheus:latest</span>
+    <span class="nm">ports</span>: [<span class="st">"9090:9090"</span>]
+    <span class="nm">volumes</span>:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml</pre>
+      </div>
+      <div class="code-block">
+        <pre><span class="cm"># Start all services</span>
+<span class="fn">docker compose up</span> -d
+
+<span class="cm"># Stop all</span>
+<span class="fn">docker compose down</span></pre>
+      </div>
+    </section>
+
+    <!-- ══ ANSIBLE ══ -->
+    <section class="chapter" id="ansible">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 04 — CONFIG MGMT</div>
+          <div class="ch-title">Ansible (Python's Chef)</div>
+          <div class="ch-sub">// install packages, configure servers, deploy apps — all in YAML</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📦 Ansible vs Chef</h3>
+        <p><strong style="color:#fff">Chef:</strong> Requires Ruby, Chef server, Chef client on every node. Complex setup.<br>
+        <strong style="color:#fff">Ansible:</strong> Pure Python. Uses SSH — no agent on target servers. YAML playbooks. Much simpler.</p>
+      </div>
+
+      <span class="lbl">Step 1 — Install Ansible</span>
+      <div class="code-block">
+        <pre><span class="fn">pip install</span> ansible          <span class="cm"># or:</span>
+<span class="fn">sudo apt install</span> ansible -y  <span class="cm"># Ubuntu</span>
+<span class="fn">ansible</span> --version</pre>
+      </div>
+
+      <span class="lbl">Step 2 — Define Your Inventory (nodes/servers)</span>
+      <div class="code-block">
+        <span class="file-tag">INI — ansible/inventory.ini (equivalent of Chef node list)</span>
+        <pre><span class="cm"># Local testing</span>
+[<span class="nm">local</span>]
+localhost ansible_connection=local
+
+[<span class="nm">webservers</span>]
+192.168.1.37   ansible_user=ubuntu  ansible_ssh_private_key_file=~/.ssh/id_rsa
+192.168.1.38   ansible_user=ubuntu  ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[<span class="nm">aws_ec2</span>]
+ec2-52-90-x-x.compute-1.amazonaws.com  ansible_user=ec2-user \
+  ansible_ssh_private_key_file=~/.ssh/book.pem</pre>
+      </div>
+
+      <span class="lbl">Step 3 — Write the Playbook (like a Chef cookbook)</span>
+      <div class="code-block">
+        <span class="file-tag">YAML — ansible/playbook.yml</span>
+        <pre><span class="cm">---</span>
+- <span class="kw">name</span>: <span class="st">Setup PyClinic Web Server</span>
+  <span class="kw">hosts</span>: <span class="st">webservers</span>
+  <span class="kw">become</span>: <span class="kw">yes</span>    <span class="cm"># sudo</span>
+
+  <span class="kw">vars</span>:
+    <span class="nm">app_dir</span>: <span class="st">/opt/pyclinic</span>
+    <span class="nm">app_user</span>: <span class="st">deploy</span>
+    <span class="nm">python_version</span>: <span class="st">python3.11</span>
+
+  <span class="kw">tasks</span>:
+
+    <span class="cm"># Like Chef: apt cookbook</span>
+    - <span class="kw">name</span>: <span class="st">Update apt cache</span>
+      <span class="nm">apt</span>:
+        <span class="nm">update_cache</span>: <span class="kw">yes</span>
+        <span class="nm">cache_valid_time</span>: <span class="nm">3600</span>
+
+    - <span class="kw">name</span>: <span class="st">Install Python 3, pip, venv, git</span>
+      <span class="nm">apt</span>:
+        <span class="nm">name</span>:
+          - <span class="st">python3.11</span>
+          - <span class="st">python3-pip</span>
+          - <span class="st">python3-venv</span>
+          - <span class="st">git</span>
+          - <span class="st">nginx</span>
+        <span class="nm">state</span>: present
+
+    <span class="cm"># Create app user (secure practice)</span>
+    - <span class="kw">name</span>: <span class="st">Create deploy user</span>
+      <span class="nm">user</span>:
+        <span class="nm">name</span>: <span class="st">"{{ app_user }}"</span>
+        <span class="nm">shell</span>: <span class="st">/bin/bash</span>
+        <span class="nm">create_home</span>: <span class="kw">yes</span>
+
+    <span class="cm"># Clone our Flask app</span>
+    - <span class="kw">name</span>: <span class="st">Clone PyClinic repository</span>
+      <span class="nm">git</span>:
+        <span class="nm">repo</span>: <span class="st">https://github.com/yourorg/pyclinic.git</span>
+        <span class="nm">dest</span>: <span class="st">"{{ app_dir }}"</span>
+        <span class="nm">version</span>: <span class="st">main</span>
+
+    <span class="cm"># Install Python dependencies</span>
+    - <span class="kw">name</span>: <span class="st">Install Python dependencies in venv</span>
+      <span class="nm">pip</span>:
+        <span class="nm">requirements</span>: <span class="st">"{{ app_dir }}/requirements.txt"</span>
+        <span class="nm">virtualenv</span>: <span class="st">"{{ app_dir }}/venv"</span>
+        <span class="nm">virtualenv_command</span>: <span class="st">python3.11 -m venv</span>
+
+    <span class="cm"># Create systemd service (like Tomcat service)</span>
+    - <span class="kw">name</span>: <span class="st">Deploy systemd service file</span>
+      <span class="nm">template</span>:
+        <span class="nm">src</span>: <span class="st">pyclinic.service.j2</span>
+        <span class="nm">dest</span>: <span class="st">/etc/systemd/system/pyclinic.service</span>
+      <span class="nm">notify</span>: Restart pyclinic
+
+    - <span class="kw">name</span>: <span class="st">Enable and start pyclinic service</span>
+      <span class="nm">systemd</span>:
+        <span class="nm">name</span>: pyclinic
+        <span class="nm">enabled</span>: <span class="kw">yes</span>
+        <span class="nm">state</span>: started
+        <span class="nm">daemon_reload</span>: <span class="kw">yes</span>
+
+  <span class="kw">handlers</span>:
+    - <span class="kw">name</span>: <span class="st">Restart pyclinic</span>
+      <span class="nm">systemd</span>:
+        <span class="nm">name</span>: pyclinic
+        <span class="nm">state</span>: restarted</pre>
+      </div>
+
+      <span class="lbl">Step 4 — Run the Playbook</span>
+      <div class="code-block">
+        <pre><span class="cm"># Test connectivity first</span>
+<span class="fn">ansible</span> all -i ansible/inventory.ini -m ping
+
+<span class="cm"># Dry run (check mode — like chef dry-run)</span>
+<span class="fn">ansible-playbook</span> ansible/playbook.yml \
+  -i ansible/inventory.ini \
+  --check
+
+<span class="cm"># Apply for real</span>
+<span class="fn">ansible-playbook</span> ansible/playbook.yml \
+  -i ansible/inventory.ini \
+  -v              <span class="cm"># verbose output</span>
+
+<span class="cm"># Only run specific tags</span>
+<span class="fn">ansible-playbook</span> ansible/playbook.yml \
+  -i ansible/inventory.ini \
+  --tags <span class="st">"install"</span></pre>
+      </div>
+    </section>
+
+    <!-- ══ BOTO3 / AWS ══ -->
+    <section class="chapter" id="boto3">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 04b — CLOUD</div>
+          <div class="ch-title">boto3 — AWS Automation in Python</div>
+          <div class="ch-sub">// provision EC2, S3, security groups — all with Python code</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>☁️ boto3 vs knife-ec2</h3>
+        <p>The book uses <code>knife ec2 server create</code> (Ruby CLI) to provision AWS instances. With <code>boto3</code> (Python), you do the same — and everything is a Python script you can version-control, test, and import.</p>
+      </div>
+
+      <span class="lbl">Step 1 — Configure AWS Credentials</span>
+      <div class="code-block">
+        <pre><span class="fn">pip install</span> boto3 awscli
+
+<span class="cm"># Configure credentials (one-time setup)</span>
+<span class="fn">aws configure</span>
+<span class="cm"># Enter: AWS Access Key ID, Secret Access Key, region, output format</span>
+
+<span class="cm"># Verify</span>
+<span class="fn">aws sts get-caller-identity</span></pre>
+      </div>
+
+      <span class="lbl">Step 2 — Provision an EC2 Instance with Python</span>
+      <div class="code-block">
+        <span class="file-tag">PYTHON — provision_ec2.py (equivalent of knife ec2 server create)</span>
+        <pre><span class="kw">import</span> <span class="fn">boto3</span>
+<span class="kw">import</span> <span class="fn">time</span>
+
+ec2 = boto3.resource(<span class="st">'ec2'</span>, region_name=<span class="st">'us-east-1'</span>)
+
+<span class="kw">def</span> <span class="fn">create_instance</span>(name: str, key_name: str) -> str:
+    <span class="st">"""Create EC2 t2.micro with Ubuntu 22.04 and return public IP."""</span>
+    instances = ec2.create_instances(
+        ImageId=<span class="st">'ami-0c02fb55956c7d316'</span>,  <span class="cm"># Ubuntu 22.04 us-east-1</span>
+        InstanceType=<span class="st">'t2.micro'</span>,
+        MinCount=<span class="nm">1</span>, MaxCount=<span class="nm">1</span>,
+        KeyName=key_name,
+        TagSpecifications=[{
+            <span class="st">'ResourceType'</span>: <span class="st">'instance'</span>,
+            <span class="st">'Tags'</span>: [{<span class="st">'Key'</span>: <span class="st">'Name'</span>, <span class="st">'Value'</span>: name}]
+        }],
+        SecurityGroupIds=[<span class="st">'sg-xxxxxxxx'</span>],  <span class="cm"># your security group</span>
+        UserData=<span class="st">"""#!/bin/bash
+apt update && apt install -y python3 python3-pip git
+pip3 install flask gunicorn
+"""</span>
+    )
+    instance = instances[<span class="nm">0</span>]
+    print(<span class="st">f'Created instance: {instance.id}'</span>)
+
+    <span class="cm"># Wait until running</span>
+    instance.wait_until_running()
+    instance.reload()
+    print(<span class="st">f'Public IP: {instance.public_ip_address}'</span>)
+    <span class="kw">return</span> instance.public_ip_address
+
+
+<span class="kw">def</span> <span class="fn">open_port</span>(sg_id: str, port: int):
+    <span class="st">"""Open a port in security group — like AWS Console inbound rule."""</span>
+    sg = ec2.SecurityGroup(sg_id)
+    sg.authorize_ingress(IpPermissions=[{
+        <span class="st">'IpProtocol'</span>: <span class="st">'tcp'</span>,
+        <span class="st">'FromPort'</span>: port, <span class="st">'ToPort'</span>: port,
+        <span class="st">'IpRanges'</span>: [{<span class="st">'CidrIp'</span>: <span class="st">'0.0.0.0/0'</span>}]
+    }])
+    print(<span class="st">f'Port {port} opened in {sg_id}'</span>)
+
+
+<span class="kw">if</span> __name__ == <span class="st">'__main__'</span>:
+    ip = create_instance(<span class="st">'PyClinicServer'</span>, key_name=<span class="st">'book'</span>)
+    open_port(<span class="st">'sg-xxxxxxxx'</span>, port=<span class="nm">5000</span>)
+    print(<span class="st">f'App will be at: http://{ip}:5000'</span>)</pre>
+      </div>
+
+      <span class="lbl">Step 3 — Deploy WAR→Python App to EC2 with Paramiko (SSH)</span>
+      <div class="code-block">
+        <span class="file-tag">PYTHON — deploy.py (equivalent of scp + ssh deploy script)</span>
+        <pre><span class="kw">import</span> <span class="fn">paramiko</span>
+<span class="kw">import</span> <span class="fn">subprocess</span>
+
+<span class="kw">def</span> <span class="fn">deploy_to_ec2</span>(host: str, key_path: str):
+    <span class="st">"""SSH into EC2 and deploy latest app code."""</span>
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, username=<span class="st">'ubuntu'</span>, key_filename=key_path)
+
+    commands = [
+        <span class="st">'cd /opt/pyclinic && git pull origin main'</span>,
+        <span class="st">'source venv/bin/activate && pip install -r requirements.txt'</span>,
+        <span class="st">'sudo systemctl restart pyclinic'</span>,
+        <span class="st">'sudo systemctl status pyclinic --no-pager'</span>,
+    ]
+
+    <span class="kw">for</span> cmd <span class="kw">in</span> commands:
+        print(<span class="st">f'$ {cmd}'</span>)
+        stdin, stdout, stderr = ssh.exec_command(cmd)
+        output = stdout.read().decode()
+        error  = stderr.read().decode()
+        <span class="kw">if</span> output: print(output)
+        <span class="kw">if</span> error:  print(<span class="st">f'ERR: {error}'</span>)
+
+    ssh.close()
+    print(<span class="st">f'✅ Deployed to {host}'</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">'__main__'</span>:
+    deploy_to_ec2(<span class="st">'ec2-52-90-x-x.compute-1.amazonaws.com'</span>, <span class="st">'~/.ssh/book.pem'</span>)</pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="ci">⚠️</div>
+        <p>Install paramiko first: <code>pip install paramiko</code>. Never hardcode credentials — use AWS IAM roles or environment variables.</p>
+      </div>
+    </section>
+
+    <!-- ══ TESTING ══ -->
+    <section class="chapter" id="testing">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 06 — TESTING</div>
+          <div class="ch-title">pytest + Selenium Testing</div>
+          <div class="ch-sub">// unit tests, functional tests, coverage reports</div>
+        </div>
+      </div>
+
+      <span class="lbl">Part A — pytest Unit Tests</span>
+      <div class="code-block">
+        <span class="file-tag">PYTHON — tests/test_app.py</span>
+        <pre><span class="kw">import</span> <span class="fn">pytest</span>
+<span class="kw">from</span> <span class="fn">app</span> <span class="kw">import</span> app
+
+@pytest.fixture
+<span class="kw">def</span> <span class="fn">client</span>():
+    <span class="st">"""Flask test client — no real HTTP needed."""</span>
+    app.config[<span class="st">'TESTING'</span>] = <span class="kw">True</span>
+    <span class="kw">with</span> app.test_client() <span class="kw">as</span> client:
+        <span class="kw">yield</span> client
+
+
+<span class="kw">class</span> <span class="fn">TestHealthCheck</span>:
+    <span class="kw">def</span> <span class="fn">test_health_returns_200</span>(self, client):
+        resp = client.get(<span class="st">'/health'</span>)
+        <span class="kw">assert</span> resp.status_code == <span class="nm">200</span>
+
+    <span class="kw">def</span> <span class="fn">test_health_returns_healthy_status</span>(self, client):
+        resp = client.get(<span class="st">'/health'</span>)
+        data = resp.get_json()
+        <span class="kw">assert</span> data[<span class="st">'status'</span>] == <span class="st">'healthy'</span>
+
+
+<span class="kw">class</span> <span class="fn">TestPetsAPI</span>:
+    <span class="kw">def</span> <span class="fn">test_get_pets_empty</span>(self, client):
+        resp = client.get(<span class="st">'/api/pets'</span>)
+        <span class="kw">assert</span> resp.status_code == <span class="nm">200</span>
+        <span class="kw">assert</span> resp.get_json() == []
+
+    <span class="kw">def</span> <span class="fn">test_add_pet</span>(self, client):
+        payload = {<span class="st">'name'</span>: <span class="st">'Buddy'</span>, <span class="st">'type'</span>: <span class="st">'dog'</span>}
+        resp = client.post(<span class="st">'/api/pets'</span>, json=payload)
+        <span class="kw">assert</span> resp.status_code == <span class="nm">201</span>
+        data = resp.get_json()
+        <span class="kw">assert</span> data[<span class="st">'name'</span>] == <span class="st">'Buddy'</span>
+
+    <span class="kw">def</span> <span class="fn">test_add_then_get_pet</span>(self, client):
+        client.post(<span class="st">'/api/pets'</span>, json={<span class="st">'name'</span>: <span class="st">'Max'</span>, <span class="st">'type'</span>: <span class="st">'cat'</span>})
+        resp = client.get(<span class="st">'/api/pets'</span>)
+        pets = resp.get_json()
+        <span class="kw">assert</span> <span class="fn">len</span>(pets) >= <span class="nm">1</span></pre>
+      </div>
+
+      <span class="lbl">Run Tests with Coverage</span>
+      <div class="code-block">
+        <pre><span class="cm"># Run all tests with coverage</span>
+<span class="fn">pytest</span> tests/ -v --cov=app --cov-report=term-missing
+
+<span class="cm"># Generate HTML coverage report</span>
+<span class="fn">pytest</span> tests/ --cov=app --cov-report=html
+<span class="cm"># Open: htmlcov/index.html in browser</span>
+
+<span class="cm"># Fail if coverage drops below 70%</span>
+<span class="fn">pytest</span> tests/ --cov=app --cov-fail-under=<span class="nm">70</span>
+
+<span class="cm"># JUnit XML output for Jenkins</span>
+<span class="fn">pytest</span> tests/ --junitxml=test-results.xml</pre>
+      </div>
+
+      <span class="lbl">Part B — Selenium Functional Tests</span>
+      <div class="code-block">
+        <span class="file-tag">PYTHON — tests/test_selenium.py</span>
+        <pre><span class="kw">import</span> <span class="fn">pytest</span>
+<span class="kw">from</span> <span class="fn">selenium</span> <span class="kw">import</span> webdriver
+<span class="kw">from</span> <span class="fn">selenium.webdriver.common.by</span> <span class="kw">import</span> By
+<span class="kw">from</span> <span class="fn">selenium.webdriver.support.ui</span> <span class="kw">import</span> WebDriverWait
+<span class="kw">from</span> <span class="fn">selenium.webdriver.support</span> <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC
+<span class="kw">from</span> <span class="fn">selenium.webdriver.chrome.options</span> <span class="kw">import</span> Options
+
+@pytest.fixture(scope=<span class="st">'session'</span>)
+<span class="kw">def</span> <span class="fn">driver</span>():
+    opts = Options()
+    opts.add_argument(<span class="st">'--headless'</span>)      <span class="cm"># no browser window (CI-safe)</span>
+    opts.add_argument(<span class="st">'--no-sandbox'</span>)
+    opts.add_argument(<span class="st">'--disable-dev-shm-usage'</span>)
+    drv = webdriver.Chrome(options=opts)
+    drv.implicitly_wait(<span class="nm">10</span>)
+    <span class="kw">yield</span> drv
+    drv.quit()
+
+BASE_URL = <span class="st">"http://localhost:5000"</span>
+
+<span class="kw">class</span> <span class="fn">TestHomePage</span>:
+    <span class="kw">def</span> <span class="fn">test_page_loads</span>(self, driver):
+        driver.get(BASE_URL)
+        <span class="kw">assert</span> <span class="st">"PyClinic"</span> <span class="kw">in</span> driver.title
+
+    <span class="kw">def</span> <span class="fn">test_health_endpoint</span>(self, driver):
+        driver.get(<span class="st">f"{BASE_URL}/health"</span>)
+        <span class="kw">assert</span> <span class="st">"healthy"</span> <span class="kw">in</span> driver.page_source
+
+<span class="kw">class</span> <span class="fn">TestAddPet</span>:
+    <span class="kw">def</span> <span class="fn">test_add_pet_form</span>(self, driver):
+        driver.get(BASE_URL)
+        <span class="cm"># Fill in pet name field</span>
+        name_field = driver.find_element(By.ID, <span class="st">'pet-name'</span>)
+        name_field.send_keys(<span class="st">'Buddy'</span>)
+        <span class="cm"># Submit form</span>
+        driver.find_element(By.ID, <span class="st">'add-pet-btn'</span>).click()
+        <span class="cm"># Wait for result</span>
+        WebDriverWait(driver, <span class="nm">5</span>).until(
+            EC.text_to_be_present_in_element((By.ID, <span class="st">'pet-list'</span>), <span class="st">'Buddy'</span>)
+        )
+        <span class="kw">assert</span> <span class="st">'Buddy'</span> <span class="kw">in</span> driver.find_element(By.ID, <span class="st">'pet-list'</span>).text</pre>
+      </div>
+
+      <div class="callout info">
+        <div class="ci">💡</div>
+        <p>For headless Selenium in CI, install ChromeDriver: <code>pip install webdriver-manager</code> and replace the Chrome setup with <code>webdriver.Chrome(ChromeDriverManager().install(), options=opts)</code>.</p>
+      </div>
+    </section>
+
+    <!-- ══ LOAD TEST ══ -->
+    <section class="chapter" id="load">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 06b — LOAD TESTING</div>
+          <div class="ch-title">Locust — Python Load Testing</div>
+          <div class="ch-sub">// write load tests in Python — the JMeter alternative</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📈 Locust vs JMeter</h3>
+        <p><strong style="color:#fff">JMeter:</strong> Java GUI tool, XML test plans, hard to version-control.<br>
+        <strong style="color:#fff">Locust:</strong> Pure Python, test plans are Python code, runs in CLI or browser UI, scales to millions of users.</p>
+      </div>
+
+      <span class="lbl">Step 1 — Write a Locustfile</span>
+      <div class="code-block">
+        <span class="file-tag">PYTHON — locustfile.py</span>
+        <pre><span class="kw">from</span> <span class="fn">locust</span> <span class="kw">import</span> HttpUser, task, between
+
+<span class="kw">class</span> <span class="fn">PyClinicUser</span>(HttpUser):
+    <span class="st">"""Simulates a real user browsing PyClinic."""</span>
+
+    <span class="cm"># Wait 1–3 seconds between tasks (realistic user behaviour)</span>
+    wait_time = between(<span class="nm">1</span>, <span class="nm">3</span>)
+
+    <span class="kw">def</span> <span class="fn">on_start</span>(self):
+        <span class="st">"""Called when each simulated user starts."""</span>
+        self.client.get(<span class="st">'/'</span>)   <span class="cm"># visit homepage first</span>
+
+    @task(<span class="nm">3</span>)   <span class="cm"># weight=3, runs 3x more often</span>
+    <span class="kw">def</span> <span class="fn">view_home</span>(self):
+        self.client.get(<span class="st">'/'</span>)
+
+    @task(<span class="nm">2</span>)
+    <span class="kw">def</span> <span class="fn">view_pets</span>(self):
+        self.client.get(<span class="st">'/api/pets'</span>)
+
+    @task(<span class="nm">1</span>)
+    <span class="kw">def</span> <span class="fn">add_pet</span>(self):
+        self.client.post(<span class="st">'/api/pets'</span>, json={
+            <span class="st">'name'</span>: <span class="st">'LoadTestPet'</span>,
+            <span class="st">'type'</span>: <span class="st">'dog'</span>
+        })
+
+    @task(<span class="nm">1</span>)
+    <span class="kw">def</span> <span class="fn">health_check</span>(self):
+        <span class="kw">with</span> self.client.get(<span class="st">'/health'</span>, catch_response=<span class="kw">True</span>) <span class="kw">as</span> resp:
+            <span class="kw">if</span> resp.json().get(<span class="st">'status'</span>) != <span class="st">'healthy'</span>:
+                resp.failure(<span class="st">'Health check failed!'</span>)</pre>
+      </div>
+
+      <span class="lbl">Step 2 — Run Locust</span>
+      <div class="code-block">
+        <pre><span class="cm"># Option A: Web UI (browse to http://localhost:8089, set users + spawn rate)</span>
+<span class="fn">locust</span> -f locustfile.py --host http://localhost:5000
+
+<span class="cm"># Option B: Headless CLI mode (perfect for Jenkins)</span>
+<span class="fn">locust</span> -f locustfile.py \
+  --host http://localhost:5000 \
+  --users <span class="nm">100</span> \
+  --spawn-rate <span class="nm">10</span> \
+  --run-time <span class="nm">60</span>s \
+  --headless \
+  --csv=results/locust
+
+<span class="cm"># Results: results/locust_stats.csv, results/locust_failures.csv</span></pre>
+      </div>
+
+      <span class="lbl">Step 3 — Integrate Locust into Jenkins</span>
+      <div class="code-block">
+        <span class="file-tag">GROOVY — Add this stage to your Jenkinsfile</span>
+        <pre><span class="kw">stage</span>(<span class="st">'📈 Load Test (Locust)'</span>) {
+  <span class="kw">steps</span> {
+    <span class="fn">sh</span> <span class="st">'''
+      . venv/bin/activate
+      mkdir -p results
+      locust -f locustfile.py \
+        --host http://localhost:5000 \
+        --users 50 --spawn-rate 5 \
+        --run-time 30s --headless \
+        --csv=results/locust
+    '''</span>
+  }
+  <span class="kw">post</span> {
+    <span class="kw">always</span> { archiveArtifacts <span class="nm">artifacts</span>: <span class="st">'results/*.csv'</span> }
+  }
+}</pre>
+      </div>
+    </section>
+
+    <!-- ══ FULL PIPELINE ══ -->
+    <section class="chapter" id="pipeline">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 07 — ORCHESTRATION</div>
+          <div class="ch-title">Full End-to-End Pipeline</div>
+          <div class="ch-sub">// everything chained: git push → lint → test → docker → deploy → load test</div>
+        </div>
+      </div>
+
+      <div class="callout ok">
+        <div class="ci">🎼</div>
+        <p>This is the orchestration chapter — tie every step into one automated pipeline triggered by a single <code>git push</code>.</p>
+      </div>
+
+      <span class="lbl">Complete GitHub Actions Pipeline (All Stages)</span>
+      <div class="code-block">
+        <span class="file-tag">YAML — .github/workflows/full-pipeline.yml</span>
+        <pre><span class="kw">name</span>: Full DevOps Pipeline
+
+<span class="kw">on</span>:
+  <span class="nm">push</span>: { <span class="nm">branches</span>: [main] }
+
+<span class="kw">jobs</span>:
+
+  <span class="cm"># ── Stage 1: Lint + Test ──────────────────────</span>
+  <span class="nm">quality</span>:
+    <span class="nm">runs-on</span>: ubuntu-latest
+    <span class="nm">steps</span>:
+      - <span class="nm">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="nm">uses</span>: <span class="st">actions/setup-python@v5</span>
+        <span class="nm">with</span>: { <span class="nm">python-version</span>: <span class="st">'3.11'</span> }
+      - <span class="nm">run</span>: pip install -r requirements.txt
+      - <span class="nm">run</span>: flake8 app.py --max-line-length=100
+      - <span class="nm">run</span>: bandit -r app.py -ll
+      - <span class="nm">run</span>: pytest tests/test_app.py --junitxml=results.xml --cov=app --cov-fail-under=70
+      - <span class="nm">uses</span>: <span class="st">actions/upload-artifact@v4</span>
+        <span class="nm">with</span>: { <span class="nm">name</span>: test-results, <span class="nm">path</span>: results.xml }
+
+  <span class="cm"># ── Stage 2: Build &amp; Push Docker Image ───────</span>
+  <span class="nm">docker</span>:
+    <span class="nm">needs</span>: quality     <span class="cm"># only runs if quality passes</span>
+    <span class="nm">runs-on</span>: ubuntu-latest
+    <span class="nm">steps</span>:
+      - <span class="nm">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="nm">name</span>: Build &amp; Push
+        <span class="nm">run</span>: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" \
+            | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/pyclinic:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/pyclinic:${{ github.sha }}
+          docker tag  ${{ secrets.DOCKER_USERNAME }}/pyclinic:${{ github.sha }} \
+                      ${{ secrets.DOCKER_USERNAME }}/pyclinic:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/pyclinic:latest
+
+  <span class="cm"># ── Stage 3: Deploy via Ansible ───────────────</span>
+  <span class="nm">deploy</span>:
+    <span class="nm">needs</span>: docker
+    <span class="nm">runs-on</span>: ubuntu-latest
+    <span class="nm">steps</span>:
+      - <span class="nm">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="nm">name</span>: Setup SSH Key
+        <span class="nm">run</span>: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/book.pem
+          chmod 600 ~/.ssh/book.pem
+      - <span class="nm">name</span>: Run Ansible Deploy Playbook
+        <span class="nm">run</span>: |
+          pip install ansible
+          ansible-playbook ansible/playbook.yml \
+            -i ansible/inventory.ini \
+            --private-key ~/.ssh/book.pem \
+            -u ubuntu
+
+  <span class="cm"># ── Stage 4: Smoke + Load Test ────────────────</span>
+  <span class="nm">verify</span>:
+    <span class="nm">needs</span>: deploy
+    <span class="nm">runs-on</span>: ubuntu-latest
+    <span class="nm">steps</span>:
+      - <span class="nm">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="nm">name</span>: Smoke Test
+        <span class="nm">run</span>: |
+          pip install requests
+          python -c "
+          import requests, sys
+          r = requests.get('http://${{ secrets.EC2_HOST }}:5000/health')
+          print(r.json())
+          sys.exit(0 if r.json()['status']=='healthy' else 1)
+          "
+      - <span class="nm">name</span>: Load Test (Locust)
+        <span class="nm">run</span>: |
+          pip install locust
+          locust -f locustfile.py \
+            --host http://${{ secrets.EC2_HOST }}:5000 \
+            --users 20 --spawn-rate 5 --run-time 30s --headless</pre>
+      </div>
+    </section>
+
+    <!-- ══ MONITORING ══ -->
+    <section class="chapter" id="monitoring">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 08a — MONITORING</div>
+          <div class="ch-title">Prometheus + Grafana</div>
+          <div class="ch-sub">// instrument your Flask app and build dashboards</div>
+        </div>
+      </div>
+
+      <span class="lbl">Step 1 — Expose Metrics from Flask (already in app.py)</span>
+      <div class="code-block">
+        <span class="file-tag">PYTHON — already wired in app.py above</span>
+        <pre><span class="kw">from</span> <span class="fn">prometheus_flask_exporter</span> <span class="kw">import</span> PrometheusMetrics
+metrics = PrometheusMetrics(app)
+<span class="cm"># Now http://localhost:5000/metrics exposes Prometheus-format data</span></pre>
+      </div>
+
+      <span class="lbl">Step 2 — Configure Prometheus to Scrape Your App</span>
+      <div class="code-block">
+        <span class="file-tag">YAML — prometheus.yml</span>
+        <pre><span class="kw">global</span>:
+  <span class="nm">scrape_interval</span>: 15s
+
+<span class="kw">scrape_configs</span>:
+  - <span class="nm">job_name</span>: <span class="st">'pyclinic'</span>
+    <span class="nm">static_configs</span>:
+      - <span class="nm">targets</span>: [<span class="st">'app:5000'</span>]  <span class="cm"># Docker service name</span></pre>
+      </div>
+
+      <div class="code-block">
+        <span class="file-tag">BASH — Run Prometheus + Grafana via Docker</span>
+        <pre><span class="cm"># Prometheus</span>
+<span class="fn">docker run</span> -d \
+  -p 9090:9090 \
+  -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \
+  prom/prometheus:latest
+
+<span class="cm"># Grafana</span>
+<span class="fn">docker run</span> -d \
+  -p 3000:3000 \
+  -e GF_SECURITY_ADMIN_PASSWORD=admin \
+  grafana/grafana:latest
+
+<span class="cm"># Prometheus: http://localhost:9090</span>
+<span class="cm"># Grafana:    http://localhost:3000 (admin/admin)</span></pre>
+      </div>
+
+      <div class="callout info">
+        <div class="ci">💡</div>
+        <p>In Grafana: Add data source → Prometheus → URL <code>http://prometheus:9090</code> → Import dashboard ID <code>9528</code> (Flask app metrics) from grafana.com/grafana/dashboards.</p>
+      </div>
+    </section>
+
+    <!-- ══ SECURITY ══ -->
+    <section class="chapter" id="security">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">CHAPTER 08b — SECURITY</div>
+          <div class="ch-title">Security Scanning for Python</div>
+          <div class="ch-sub">// bandit, safety, trivy — scan code and containers</div>
+        </div>
+      </div>
+
+      <span class="lbl">Tool 1 — bandit (static code security analysis)</span>
+      <div class="code-block">
+        <pre><span class="fn">pip install</span> bandit
+<span class="fn">bandit</span> -r . -ll               <span class="cm"># scan all Python files, low-level issues</span>
+<span class="fn">bandit</span> -r app.py -f json -o bandit.json  <span class="cm"># JSON output for CI</span>
+<span class="fn">bandit</span> -r . --skip B101       <span class="cm"># skip assert warnings</span></pre>
+      </div>
+
+      <span class="lbl">Tool 2 — safety (check dependencies for CVEs)</span>
+      <div class="code-block">
+        <pre><span class="fn">pip install</span> safety
+<span class="fn">safety check</span> -r requirements.txt        <span class="cm"># check for known vulnerabilities</span>
+<span class="fn">safety check</span> --json > safety_report.json <span class="cm"># CI output</span></pre>
+      </div>
+
+      <span class="lbl">Tool 3 — trivy (Docker image vulnerability scan)</span>
+      <div class="code-block">
+        <pre><span class="cm"># Install trivy</span>
+<span class="fn">curl</span> -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+<span class="cm"># Scan your Docker image</span>
+<span class="fn">trivy image</span> pyclinic:latest
+
+<span class="cm"># Fail CI if HIGH/CRITICAL vulns found</span>
+<span class="fn">trivy image</span> --exit-code 1 --severity HIGH,CRITICAL pyclinic:latest</pre>
+      </div>
+
+      <span class="lbl">Add All 3 Scans to GitHub Actions</span>
+      <div class="code-block">
+        <span class="file-tag">YAML — add this job to your workflow</span>
+        <pre>  <span class="nm">security</span>:
+    <span class="nm">runs-on</span>: ubuntu-latest
+    <span class="nm">steps</span>:
+      - <span class="nm">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="nm">run</span>: pip install bandit safety
+      - <span class="nm">name</span>: bandit scan
+        <span class="nm">run</span>: bandit -r app.py -ll
+      - <span class="nm">name</span>: dependency CVE check
+        <span class="nm">run</span>: safety check -r requirements.txt
+      - <span class="nm">name</span>: container scan
+        <span class="nm">uses</span>: <span class="st">aquasecurity/trivy-action@master</span>
+        <span class="nm">with</span>:
+          <span class="nm">image-ref</span>: <span class="st">pyclinic:latest</span>
+          <span class="nm">severity</span>: <span class="st">HIGH,CRITICAL</span>
+          <span class="nm">exit-code</span>: <span class="st">'1'</span></pre>
+      </div>
+    </section>
+
+    <!-- ══ CHEATSHEET ══ -->
+    <section class="chapter" id="cheatsheet">
+      <div class="chapter-hd">
+        <div>
+          <div class="ch-num">QUICK REFERENCE</div>
+          <div class="ch-title">⚡ Python DevOps Cheatsheet</div>
+          <div class="ch-sub">// every key command in one place</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div>
+          <span class="lbl">Virtual Environment</span>
+          <div class="code-block"><pre><span class="fn">python3</span> -m venv venv
+<span class="fn">source</span> venv/bin/activate   <span class="cm"># Linux/Mac</span>
+venv\Scripts\activate       <span class="cm"># Windows</span>
+<span class="fn">deactivate</span>
+<span class="fn">pip freeze</span> > requirements.txt</pre></div>
+
+          <span class="lbl">pytest</span>
+          <div class="code-block"><pre><span class="fn">pytest</span> tests/ -v
+<span class="fn">pytest</span> --cov=app --cov-report=html
+<span class="fn">pytest</span> --junitxml=results.xml
+<span class="fn">pytest</span> -k <span class="st">"test_health"</span>      <span class="cm"># filter</span>
+<span class="fn">pytest</span> --cov-fail-under=<span class="nm">70</span></pre></div>
+
+          <span class="lbl">Code Quality</span>
+          <div class="code-block"><pre><span class="fn">flake8</span> app.py --max-line-length=100
+<span class="fn">pylint</span> app.py
+<span class="fn">bandit</span> -r app.py -ll
+<span class="fn">safety check</span> -r requirements.txt
+<span class="fn">black</span> app.py              <span class="cm"># auto-format</span></pre></div>
+
+          <span class="lbl">Locust Load Test</span>
+          <div class="code-block"><pre><span class="fn">locust</span> -f locustfile.py \
+  --host http://localhost:5000
+<span class="cm"># headless:</span>
+<span class="fn">locust</span> -f locustfile.py \
+  --host http://localhost:5000 \
+  --users 100 --spawn-rate 10 \
+  --run-time 60s --headless \
+  --csv=results/load</pre></div>
+        </div>
+
+        <div>
+          <span class="lbl">Docker</span>
+          <div class="code-block"><pre><span class="fn">docker build</span> -t pyclinic .
+<span class="fn">docker run</span> -d -p 8080:5000 \
+  --name pyclinic pyclinic:latest
+<span class="fn">docker logs</span> -f pyclinic
+<span class="fn">docker exec</span> -it pyclinic bash
+<span class="fn">docker stop</span> pyclinic
+<span class="fn">docker compose up</span> -d
+<span class="fn">trivy image</span> pyclinic:latest</pre></div>
+
+          <span class="lbl">Ansible</span>
+          <div class="code-block"><pre><span class="fn">ansible</span> all -i inventory.ini -m ping
+<span class="fn">ansible-playbook</span> playbook.yml \
+  -i inventory.ini --check
+<span class="fn">ansible-playbook</span> playbook.yml \
+  -i inventory.ini -v
+<span class="fn">ansible-vault encrypt</span> secrets.yml
+<span class="fn">ansible-galaxy install</span> geerlingguy.docker</pre></div>
+
+          <span class="lbl">boto3 / AWS</span>
+          <div class="code-block"><pre><span class="fn">aws configure</span>
+<span class="fn">aws sts get-caller-identity</span>
+<span class="fn">aws ec2 describe-instances</span>
+<span class="cm"># Python:</span>
+<span class="kw">import</span> boto3
+ec2 = boto3.resource(<span class="st">'ec2'</span>)
+s3  = boto3.client(<span class="st">'s3'</span>)</pre></div>
+
+          <span class="lbl">Flask App</span>
+          <div class="code-block"><pre><span class="fn">python</span> app.py                  <span class="cm"># dev</span>
+<span class="fn">gunicorn</span> app:app -b 0.0.0.0:5000 \
+  --workers 4                   <span class="cm"># prod</span>
+<span class="fn">flask run</span> --host=0.0.0.0
+<span class="fn">curl</span> http://localhost:5000/health</pre></div>
+        </div>
+      </div>
+
+      <div class="callout ok" style="margin-top:28px;">
+        <div class="ci">🎉</div>
+        <p><strong>You now have a complete Python DevOps pipeline.</strong> From Flask app → pytest → flake8 → bandit → Docker → Ansible → boto3 → Locust → Prometheus. Every stage maps directly to a chapter in DevOps Bootcamp — built entirely with Python and open-source tools.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.chapter');
+  const navItems = document.querySelectorAll('.nav-item');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-25% 0px -65% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
